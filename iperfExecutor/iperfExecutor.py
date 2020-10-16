@@ -111,7 +111,10 @@ class iPerf:
                 parameters.append(value)
 
         params = [cls.executable, *parameters]
-        print(params)
+
+        print(f'Final CLI parameters: {params}')
+        print(f'Protocol: {protocol}; Parallel: {parallelEnabled} (Count: {parallelCount}); Interval: {interval}')
+
         Thread(target=cls.async_task, args=(params, protocol, parallelEnabled, interval)).start()
         return None
 

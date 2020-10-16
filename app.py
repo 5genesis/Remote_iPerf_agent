@@ -13,6 +13,11 @@ with open(os.path.join(THIS_FOLDER, 'config.yml'), 'r', encoding='utf-8') as fil
 iPerf.Initialize(data['IPERF_PATH'])
 
 
+def errorResponse(message, error):
+    print(f'{message}: {error}')
+    return jsonify({'Status': 'Error', 'Message': message, 'Error': f'{error}'}), 403
+
+
 @app.route('/Iperf', methods=['POST'])
 @app.route('/Iperf/<pathParameters>', methods=['GET'])
 def Iperf(pathParameters: str = ""):
@@ -25,9 +30,7 @@ def Iperf(pathParameters: str = ""):
             if iPerfConfig.formatValidation(pathParameters):
                 parameters = pathParameters[1:-1].split(',')
             else:
-                print(f'Wrong parameters format')
-                return jsonify({'Status': 'Error', 'Message': f'Error executing iPerf',
-                                'Error': 'Wrong parameters format.'}), 403
+                return errorResponse('Error executing iPerf', 'Wrong parameter format')
 
         for param in parameters:
             if '-c' in param:
@@ -36,9 +39,8 @@ def Iperf(pathParameters: str = ""):
         iPerf.Iperf(parameters)
         return jsonify({'Status': 'Success', 'Message': f'Successfully executed iPerf {mode}'})
 
-    except RuntimeError as error:
-        print(f'{error}')
-        return jsonify({'Status': 'Error', 'Message': f'Error executing iPerf {mode}', 'Error': f'{error}'}), 403
+    except Exception as error:
+        return errorResponse(f'Error executing iPerf {mode}', error)
 
 
 @app.route('/Close', methods=['GET'])
@@ -46,9 +48,8 @@ def Close():
     try:
         iPerf.Close()
         return jsonify({'Status': 'Success', 'Message': 'Successfully closed iPerf'})
-    except RuntimeError as error:
-        print(f'{error}')
-        return jsonify({'Status': 'Error', 'Message': 'Error closing iPerf', 'Error': f'{error}'}), 403
+    except Exception as error:
+        return errorResponse('Error closing iPerf', error)
 
 
 @app.route('/LastRawResult', methods=['GET'])
@@ -56,9 +57,8 @@ def LastRawResult():
     try:
         return jsonify({'Status': 'Success', 'Message': 'Successfully retrieved last raw result',
                         'Result': iPerf.LastRawResult()})
-    except RuntimeError as error:
-        print(f'{error}')
-        return jsonify({'Status': 'Error', 'Message': 'Error retrieving last raw result', 'Error': f'{error}'}), 403
+    except Exception as error:
+        return errorResponse('Error retrieving last raw result', error)
 
 
 @app.route('/LastJsonResult', methods=['GET'])
@@ -66,9 +66,8 @@ def LastJsonResult():
     try:
         return jsonify({'Status': 'Success', 'Message': 'Successfully retrieved last json result',
                         'Result': iPerf.LastJsonResult()})
-    except RuntimeError as error:
-        print(f'{error}')
-        return jsonify({'Status': 'Error', 'Message': 'Error retrieving last json result', 'Error': f'{error}'}), 403
+    except Exception as error:
+        return errorResponse('Error retrieving last json result', error)
 
 
 @app.route('/LastError', methods=['GET'])
@@ -76,9 +75,8 @@ def LastError():
     try:
         return jsonify({'Status': 'Success', 'Message': 'Successfully retrieved last error',
                         'Error': iPerf.LastError()})
-    except RuntimeError as error:
-        print(f'{error}')
-        return jsonify({'Status': 'Error', 'Message': 'Error retrieving last error', 'Error': f'{error}'}), 403
+    except Exception as error:
+        return errorResponse('Error retrieving last error', error)
 
 
 @app.route('/StartDateTime', methods=['GET'])
