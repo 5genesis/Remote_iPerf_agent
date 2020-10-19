@@ -1,3 +1,7 @@
+**19/10/2020** [Version 1.0.6]
+
+ - Fix result parsing when parallel is explicitly set to 1
+
 **20/04/2020** [Version 1.0.5]
 
  - Allow setting the reporting interval (-i)
