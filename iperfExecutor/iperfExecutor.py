@@ -93,12 +93,15 @@ class iPerf:
         else:
             protocol = 'TCP'
 
-        # 'P' parameter must be after client host and port
         if '-P' in parametersDict.keys():
-            parallelEnabled = True
-            moveToLast = parametersDict.pop('-P')
-            parametersDict['-P'] = moveToLast
+            # 'P' parameter must be after client host and port, move it to the last key
+            parallelCount = int(parametersDict.pop('-P'))
+            parametersDict['-P'] = str(parallelCount)
+
+            # Even if 'P' is set, iPerf will ignore it when < 2
+            parallelEnabled = (parallelCount > 1)
         else:
+            parallelCount = 1
             parallelEnabled = False
 
         parameters = []
@@ -108,7 +111,10 @@ class iPerf:
                 parameters.append(value)
 
         params = [cls.executable, *parameters]
-        print(params)
+
+        print(f'Final CLI parameters: {params}')
+        print(f'Protocol: {protocol}; Parallel: {parallelEnabled} (Count: {parallelCount}); Interval: {interval}')
+
         Thread(target=cls.async_task, args=(params, protocol, parallelEnabled, interval)).start()
         return None
 

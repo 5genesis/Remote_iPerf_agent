@@ -46,7 +46,7 @@ class iPerfConfig:
 
     @classmethod
     def shortenParameters(cls, parameters: Dict) -> Dict:
-        print(parameters)
+        print(f'Received parameters: {parameters}')
         shortParameters = parameters
         for param in parameters.keys():
             if param in cls.longParameters.keys():
@@ -54,12 +54,13 @@ class iPerfConfig:
                 shortParameters.pop(param)
                 shortParameters[cls.longParameters[param]] = value
 
-        print(shortParameters)
+        print(f'Shorted parameters: {shortParameters}')
         return shortParameters
 
     @classmethod
     def parseIperfResult(cls, line: str, protocol: str, parallelEnabled: bool, startTime: datetime, interval: int):
         print(line)
+
         pattern = r'\[(.*)] *(\d+(\.\d+)?) *- *(\d+(\.\d+)?) *sec *(\d+(\.\d+)?) *MBytes *(\d+(\.\d+)?) *Mbits/sec(.*)?'
         udpPattern = r' *(\d+(\.\d+)?) *ms *\d+ */ *\d+ \((\d+(\.\d+)?)%\) *'
         jsonResult = {}
